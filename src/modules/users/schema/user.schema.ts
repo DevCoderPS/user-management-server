@@ -27,7 +27,7 @@ export class User extends Document {
 
     @Prop({
         required: true,
-        enum: ['admin', 'Moderator', 'User'],
+        enum: ['admin', 'moderator', 'user'],
     })
     role: string;
 
@@ -58,11 +58,30 @@ export class User extends Document {
     })
     status: string;
 
+    @Prop({
+        required: true,
+        enum: [
+            'engineering',
+            'marketing',
+            'sales',
+            'hr',
+            'finance',
+            'operations',
+        ],
+    })
+    department: string;
+
     @Prop({ default: true })
-    emailVerified: boolean;
+    isEmailVerified: boolean;
+
+    @Prop({ default: 1 })
+    rating: number;
 
     @Prop()
     address?: string;
+
+    @Prop({ maxlength: 500 })
+    bio?: string;
 
     @Prop({ default: false })
     delFlg: boolean;

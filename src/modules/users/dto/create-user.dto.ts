@@ -1,14 +1,18 @@
+import { Type } from 'class-transformer';
 import {
     IsBoolean,
-    IsDateString,
     IsEmail,
     IsEnum,
+    IsNotEmpty,
+    IsNumber,
     IsOptional,
     IsString,
     Matches,
     MaxLength,
     MinLength,
+    Validate,
 } from 'class-validator';
+import { Match } from 'src/common/decorators/match.decorator';
 
 export class CreateUserDto {
     @IsString()
@@ -36,6 +40,8 @@ export class CreateUserDto {
     gender: string;
 
     @IsString()
+    @MinLength(8)
+    @MaxLength(20)
     @Matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
         {
@@ -45,13 +51,20 @@ export class CreateUserDto {
     )
     password: string;
 
+    @IsString()
+    @IsNotEmpty()
+    // @Equals('Password@2025', { message: 'Passwords do not match' })
+    @Validate(Match, ['password'])
+    confirmPassword: string;
+
     @IsOptional()
     @Matches(/^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/, {
         message: 'Phone number must be valid',
     })
     phone?: string;
 
-    @IsDateString()
+    @IsNotEmpty()
+    @Type(() => Date)
     dateOfBirth: Date;
 
     @IsEnum(['active', 'inactive'], {
@@ -59,12 +72,27 @@ export class CreateUserDto {
     })
     status: string;
 
+    @IsEnum(
+        ['engineering', 'marketing', 'sales', 'hr', 'finance', 'operations'],
+        {
+            message:
+                'Department must be one of: engineering, marketing, sales, hr, finance, operations',
+        },
+    )
+    department: string;
+
     @IsOptional()
     @IsBoolean()
-    emailVerified?: boolean = true;
+    isEmailVerified?: boolean = true;
+
+    @IsNumber()
+    rating: number;
 
     @IsOptional()
     address?: string;
+
+    @IsOptional()
+    bio?: string;
 
     @IsOptional()
     @IsBoolean()
