@@ -83,6 +83,30 @@ export class User extends Document {
     @Prop({ maxlength: 500 })
     bio?: string;
 
+    @Prop({ required: true })
+    preferredTheme: string;
+
+    @Prop({ required: true, minlength: 1, maxlength: 20 })
+    experienceLevel: number;
+
+    @Prop({
+        type: [
+            'javascript',
+            'react',
+            'nodejs',
+            'python',
+            'django',
+            'postgresql',
+            'flutter',
+            'figma',
+            'typescript',
+            'vue',
+            'angular',
+        ],
+        default: [],
+    })
+    skills: string[];
+
     @Prop({ default: false })
     delFlg: boolean;
 }

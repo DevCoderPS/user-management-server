@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+    IsArray,
     IsBoolean,
     IsEmail,
     IsEnum,
@@ -93,6 +94,15 @@ export class CreateUserDto {
 
     @IsOptional()
     bio?: string;
+
+    @IsString()
+    preferredTheme: string;
+
+    @IsNumber()
+    experienceLevel: number;
+
+    @IsArray()
+    skills: string[];
 
     @IsOptional()
     @IsBoolean()

@@ -27,7 +27,7 @@ export class UsersController {
     @Get()
     async findAll(
         @Query('page') page: number = 1,
-        @Query('limit') limit: number = 10,
+        @Query('limit') limit: number = 5,
     ): Promise<{ data: UserResponseDto[] }> {
         return this.usersService.findAll(page, limit);
     }
