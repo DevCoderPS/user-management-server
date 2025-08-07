@@ -3,9 +3,15 @@ import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { WinstonModule } from 'nest-winston';
+import { createLoggerConfig } from './config/logger.config';
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, {
+        logger: WinstonModule.createLogger(
+            createLoggerConfig('NestApplication'),
+        ),
+    });
 
     // set global prefix for all routes
     app.setGlobalPrefix('api');

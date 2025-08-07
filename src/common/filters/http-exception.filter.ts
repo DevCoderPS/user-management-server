@@ -4,14 +4,16 @@ import {
     ArgumentsHost,
     HttpException,
     HttpStatus,
-    Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { LoggerService } from 'src/shared/logger/logger.service';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
-    // private readonly logger = new Logger(AuthService.name);
-    private readonly logger = new Logger();
+    private readonly logger: LoggerService;
+    constructor() {
+        this.logger = new LoggerService(HttpExceptionFilter.name);
+    }
     catch(exception: HttpException, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();

@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, Logger } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
@@ -8,11 +8,14 @@ import { User } from './schema/user.schema';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { plainToClass } from 'class-transformer';
+import { LoggerService } from 'src/shared/logger/logger.service';
 
 @Injectable()
 export class UsersService {
-    private readonly logger = new Logger(UsersService.name);
-    constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+    private readonly logger: LoggerService;
+    constructor(@InjectModel(User.name) private userModel: Model<User>) {
+        this.logger = new LoggerService(UsersService.name);
+    }
 
     async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
         // check if email already exists
