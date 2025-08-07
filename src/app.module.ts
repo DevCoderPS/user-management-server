@@ -10,6 +10,7 @@ import { UsersModule } from './modules/users/users.module';
     imports: [
         ConfigModule.forRoot({
             isGlobal: true,
+            envFilePath: `.env.${process.env.NODE_ENV || 'development'}`,
             load: [configuration], // Makes ConfigModule available globally
         }),
         DatabaseModule, // Import DatabaseModule for data saving
