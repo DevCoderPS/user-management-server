@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { WinstonModule } from 'nest-winston';
 import { createLoggerConfig } from './config/logger.config';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
@@ -40,6 +41,16 @@ async function bootstrap() {
 
     // Global Error Handling
     app.useGlobalFilters(new HttpExceptionFilter());
+
+    // Swagger Setup
+    const config = new DocumentBuilder()
+        .setTitle('User Management API')
+        .setDescription('API documentation for the User Management System')
+        .setVersion('1.0')
+        .addBearerAuth() // For JWT authentication
+        .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api-docs', app, document);
 
     const configService = app.get(ConfigService);
 
