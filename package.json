@@ -30,6 +30,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "cross-env": "^10.0.0",
+    "ioredis": "^5.7.0",
     "mongoose": "^8.17.0",
     "nest-winston": "^1.10.2",
     "reflect-metadata": "^0.2.0",

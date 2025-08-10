@@ -9,11 +9,16 @@ import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { plainToClass } from 'class-transformer';
 import { LoggerService } from 'src/shared/logger/logger.service';
+import { RedisService } from 'src/shared/cache/redis.service';
+import { CACHE_TTL } from 'src/utils/constants';
 
 @Injectable()
 export class UsersService {
     private readonly logger: LoggerService;
-    constructor(@InjectModel(User.name) private userModel: Model<User>) {
+    constructor(
+        @InjectModel(User.name) private userModel: Model<User>,
+        private readonly redisService: RedisService,
+    ) {
         this.logger = new LoggerService(UsersService.name);
     }
 
@@ -38,8 +43,9 @@ export class UsersService {
             ...createUserDto,
             password: hashedPassword,
         });
-
         const createdUser = await newUser.save();
+
+        await this.redisService.delPattern('users:findAll:*');
 
         this.logger.log(`User created with ID: ${createdUser._id}`);
 
@@ -50,6 +56,13 @@ export class UsersService {
         page: number = 1,
         limit: number = 10,
     ): Promise<{ data: UserResponseDto[] }> {
+        const cacheKey = this.getCacheKey(page, limit);
+        const cachedData = await this.redisService.get(cacheKey);
+        if (cachedData) {
+            this.logger.log(`Returning cached users data for key: ${cacheKey}`);
+            return cachedData;
+        }
+
         // fetch user data from database
         this.logger.log(`Fetching users page ${page}, limit ${limit}`);
         const skip = (page - 1) * limit;
@@ -75,6 +88,9 @@ export class UsersService {
             },
         };
 
+        await this.redisService.set(cacheKey, result, CACHE_TTL); // Cache for 1 hour
+        this.logger.log(`Cached users data for key: ${cacheKey}`);
+
         return result;
     }
 
@@ -92,6 +108,9 @@ export class UsersService {
                 new: true,
             })
             .exec();
+
+        await this.redisService.delPattern('users:findAll:*');
+
         this.logger.log(`User update with ID: ${updatedUser._id}`);
         return plainToClass(UserResponseDto, updatedUser?.toJSON());
     }
@@ -106,7 +125,14 @@ export class UsersService {
             )
             .exec();
 
+        await this.redisService.delPattern('users:findAll:*');
+
         this.logger.log(`Soft deleting user with ID: ${deletedUser._id}`);
         return false;
+    }
+
+    private getCacheKey(page: number, limit: number, filters?: any): string {
+        const filterString = filters ? JSON.stringify(filters) : 'all';
+        return `users:findAll:page_${page}:limit_${limit}:filters_${filterString}`;
     }
 }

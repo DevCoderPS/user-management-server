@@ -18,16 +18,19 @@ import { LoggerService } from '../logger/logger.service';
                     uri,
                     connectionFactory: (connection) => {
                         if (connection.readyState === 1) {
-                            logger.log('MongoDB connected successfully!');
+                            logger.log('✅ MongoDB connected successfully');
                         }
                         connection.on('connected', () => {
-                            logger.log('MongoDB is connected');
+                            logger.log('✅ MongoDB is connected');
                         });
                         connection.on('disconnected', () => {
                             logger.error('MongoDB disconnected');
                         });
                         connection.on('error', (error) => {
-                            logger.error('MongoDB connection error: ', error);
+                            logger.error(
+                                '❌ MongoDB connection error: ',
+                                error,
+                            );
                         });
                         return connection;
                     },

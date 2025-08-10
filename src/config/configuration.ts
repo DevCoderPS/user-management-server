@@ -6,9 +6,10 @@ export default () => ({
             process.env.MONGODB_URI ||
             'mongodb://localhost:27017/user-management',
     },
-    jwt: {
-        secret: process.env.JWT_SECRET,
-        expiresIn: process.env.JWT_EXPIRES_IN || '1d',
+    redis: {
+        host: process.env.REDIS_HOST || 'localhost',
+        port: 6379,
+        password: 'redis-password',
     },
     logging: {
         level: process.env.LOG_LEVEL || 'debug',
